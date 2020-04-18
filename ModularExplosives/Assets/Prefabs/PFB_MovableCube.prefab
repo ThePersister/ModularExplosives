@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3352913773703467840}
   - component: {fileID: 3352913773703467841}
   - component: {fileID: 3352913773703467846}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3352913773915410287}
   - component: {fileID: 3352913773915410286}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PFB_MovableCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
