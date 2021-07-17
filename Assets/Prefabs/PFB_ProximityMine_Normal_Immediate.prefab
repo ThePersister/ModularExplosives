@@ -236,9 +236,9 @@ GameObject:
   - component: {fileID: -8833023933676197209}
   - component: {fileID: 3359484587575145438}
   - component: {fileID: 3295432716209750770}
-  - component: {fileID: 4824258398808810108}
+  - component: {fileID: -154413347867646965}
   m_Layer: 8
-  m_Name: PFB_ProximityMine_Fast
+  m_Name: PFB_ProximityMine_Normal_Immediate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -464,7 +464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e249699c4f9bd04db07fda617038cb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _explodeDuration: 0.3
+  _explodeDuration: 2
   _explosionStrength: 7
   _minPitch: 4
   _maxPitch: 8
@@ -513,7 +513,7 @@ MonoBehaviour:
   _onlyMovable:
     serializedVersion: 2
     m_Bits: 256
-  _immediatelyTriggered: 0
+  _immediatelyTriggered: 1
   _beeperMeshRenderer: {fileID: 6567872427529850174}
   _idleColor: {r: 1, g: 1, b: 1, a: 1}
   _beepColor: {r: 1, g: 0, b: 0, a: 1}
@@ -537,7 +537,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 0.6
+      value: 0.3
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -560,7 +560,7 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 3
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &4824258398808810108
+--- !u!54 &-154413347867646965
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -23,6 +23,9 @@ public class ProximityMine : MonoBehaviour
     [SerializeField]
     private LayerMask _onlyMovable;
 
+    [SerializeField]
+    private bool _immediatelyTriggered;
+
     [Header("Color")]
     [SerializeField]
     private MeshRenderer _beeperMeshRenderer;
@@ -49,15 +52,35 @@ public class ProximityMine : MonoBehaviour
     [SerializeField]
     private AudioSource _preExplosionAudioSource;
 
+    [SerializeField]
+    private AnimationCurve _audioLimiterCurve;
+
     private bool _isGoingToExplode = false;
     private SphereCollider _triggerCollider;
+
+    public float LimitedVolume01
+    {
+        get
+        {
+            return _audioLimiterCurve.Evaluate(1.0f - GameManager.Instance.TimeLeft01);
+        }
+    }
 
     private void Start()
     {
         _triggerCollider = GetComponent<SphereCollider>();
+        if (_immediatelyTriggered)
+        {
+            StartExplosionSequence();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
+    {
+        StartExplosionSequence();
+    }
+
+    private void StartExplosionSequence()
     {
         if (_isGoingToExplode) return;
         _isGoingToExplode = true;
@@ -69,6 +92,7 @@ public class ProximityMine : MonoBehaviour
     {
         _beepAudioSource.loop = true;
         _beepAudioSource.clip = _beepClip;
+        _beepAudioSource.volume = _beepAudioSource.volume * LimitedVolume01;
         _beepAudioSource.Play();
 
         StartCoroutine(PreExplosionSound());
@@ -91,12 +115,21 @@ public class ProximityMine : MonoBehaviour
             yield break;
 
         yield return new WaitForSeconds(_explodeDuration - _preExplosionClip.length);
+        _preExplosionAudioSource.volume = _preExplosionAudioSource.volume * LimitedVolume01;
         _preExplosionAudioSource.PlayOneShot(_preExplosionClip);
     }
 
     private void Explode()
     {
-        Instantiate(_explosionEffect, transform.position, Quaternion.identity);
+        GameObject explosion = Instantiate(_explosionEffect, transform.position, Quaternion.identity, ExplosionManager.Instance.transform);
+        AudioSource explosionSound = explosion.GetComponent<AudioSource>();
+        explosionSound.volume = explosionSound.volume * LimitedVolume01;
+
+        if (GameManager.Instance.IsPaused)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
 
         Collider[] movablesInRange = Physics.OverlapSphere(transform.position, _triggerCollider.radius, _onlyMovable);
         SetAllLayers(2);
@@ -108,6 +141,11 @@ public class ProximityMine : MonoBehaviour
                 var diffVector = (movable.transform.position - this.transform.position).normalized;
                 diffVector.y = 1;
                 movable.GetComponentInParent<Rigidbody>().AddForceAtPosition(diffVector * _explosionStrength, transform.position, ForceMode.Impulse);
+            }
+
+            if (movable.GetComponentInParent<Player>())
+            {
+                GameManager.Instance.GameOver();
             }
         }
 

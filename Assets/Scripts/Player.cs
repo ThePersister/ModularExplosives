@@ -8,6 +8,9 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _movementSpeed = 200f;
 
+    [SerializeField]
+    private float _sprintAmplifier = 2.0f;
+
     //[SerializeField]
     //private float _friction = 60f;
 
@@ -27,6 +30,8 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (GameManager.Instance.IsPaused) return;
+
         Move();
         FaceTowards();
     }
@@ -56,6 +61,11 @@ public class Player : MonoBehaviour
             direction.Normalize();
         }
 
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            direction *= _sprintAmplifier;
+        }
+
         //
         // TODO: Try to make movement more natural, use AddForce and Friction. (Maybe check out earlier project).
         //
@@ -70,13 +80,21 @@ public class Player : MonoBehaviour
 
         //_rigidBody.velocity = fricVelocity;
         //_rigidBody.AddForce(direction * _movementSpeed * Time.deltaTime);
-
-        _rigidBody.velocity = direction * _movementSpeed * Time.deltaTime;
+        Vector3 cameraRelativeDirection = CameraManager.Instance.CameraRoot.TransformDirection(direction);
+        _rigidBody.velocity = cameraRelativeDirection * _movementSpeed * Time.deltaTime;
     }
 
     private void FaceTowards()
     {
         Vector3 futurePosition = _transform.position + _rigidBody.velocity;
         _transform.LookAt(new Vector3(futurePosition.x, _transform.position.y, futurePosition.z));
+    }
+
+    public void Reset()
+    {
+        transform.position = Vector3.zero;
+        transform.rotation = Quaternion.identity * Quaternion.Euler(0, 135, 0);
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
     }
 }
